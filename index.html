@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            font-family: Verdana, sans-serif;
+        }
+
+        body {
+            box-sizing: border-box;
+            padding: 8px;
+            display: flex;
+        }
+
+        svg {
+            flex-grow: 1; /* Add this property so SVG takes remaining space */
+            height: 100%;
+        }
+
+        #draggableBar {
+            width: 5px;
+            height: 100%;
+            cursor: col-resize;
+            background-color: #aaa;
+        }
+
+        #panel {
+            width: 400px;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h3 {
+            text-align: center;
+        }
+
+        .num-columns {
+            display: flex;
+        }
+
+        .rational-column, .decimal-column {
+            flex: 1 1 50%;
+        }
+
+        .rational-column table {
+            border-collapse: separate;
+            border-spacing: 5px 0;
+        }
+
+        #nominator, #denominator {
+            text-align: center;
+            word-wrap: break-word;
+        }
+
+        .decimal-column {
+            width: 50%;
+            text-align: left;
+            word-wrap: break-word;
+        }
+
+        #mid {
+            height: 1px;
+        }
+
+        #divider {
+            background-color: #000;
+        }
+
+        #minus-sign {
+            width: 10px;
+        }
+    </style>
+    <title>Ford circles</title>
+</head>
+<body>
+<svg id="svg"></svg>
+<div id="draggableBar"></div>
+<div id="panel">
+    <h3>Options</h3>
+    <table>
+        <tr>
+            <td><label for="pixelDrift"
+                       title="Whenever the picture is resized or translated, the scale and offset stored as rational numbers must be recalculated. For performance purposes we approximate these rational numbers with rational numbers with smaller nominators and denominators which cause the picture to slightly &quot;drift&quot;. Smaller values decrease the drifting effect and performance.">Pixel
+                drift: </label></td>
+            <td><input type="number" id="pixelDrift" name="pixelDrift" min="0" step="any" value="0.5"/></td>
+        </tr>
+        <tr>
+            <td><label for="circleRadiusThreshold"
+                       title="Draw only the circles with radius (in pixels) greater than this.">Radius
+                threshold:</label></td>
+            <td><input type="number" id="circleRadiusThreshold" name="circleRadiusThreshold" min="0" step="any"
+                       value="3"/></td>
+        </tr>
+    </table>
+    <h3>Rational number</h3>
+    <div class="num-columns">
+        <div class="rational-column">
+            <table>
+                <tr>
+                    <td></td>
+                    <td id="nominator">p</td>
+                </tr>
+                <tr id="mid">
+                    <td id="minus-sign"></td>
+                    <td id="divider"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td id="denominator">q</td>
+                </tr>
+            </table>
+        </div>
+        <div class="decimal-column">
+            <p id="decimalValue">x.ye-z</p>
+            <button id="moreDigits" disabled>more digits...</button>
+        </div>
+    </div>
+</div>
+<script src="js/main.js" type="module"></script>
+</body>
+</html>
