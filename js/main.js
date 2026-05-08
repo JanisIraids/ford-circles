@@ -67,6 +67,18 @@ function decimalToString(decimal) {
     return str;
 }
 
+function svgPointFromEvent(event) {
+    const point = svg.createSVGPoint();
+    point.x = event.clientX;
+    point.y = event.clientY;
+    const matrix = svg.getScreenCTM();
+    if (matrix === null) {
+        const rect = svg.getBoundingClientRect();
+        return {x: event.clientX - rect.left, y: event.clientY - rect.top};
+    }
+    return point.matrixTransform(matrix.inverse());
+}
+
 function drawCircle(r) {
     const displayRadius = circleR(r);
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -245,8 +257,9 @@ svg.addEventListener('wheel', (event) => {
 
     const newOffset = {};
     const c = newScale.inverse().sub(scale.inverse());
-    newOffset.x = withinPixelPrecision(offset.x.sub(c.mul(F.fromNumber(event.clientX - svg.getBoundingClientRect().left))));
-    newOffset.y = withinPixelPrecision(offset.y.add(c.mul(F.fromNumber(event.clientY - svg.getBoundingClientRect().top))));
+    const mouse = svgPointFromEvent(event);
+    newOffset.x = withinPixelPrecision(offset.x.sub(c.mul(F.fromNumber(mouse.x))));
+    newOffset.y = withinPixelPrecision(offset.y.add(c.mul(F.fromNumber(mouse.y))));
     updateCircles(offset, newOffset, scale, newScale);
     offset = newOffset;
     scale = newScale;
@@ -271,17 +284,19 @@ svg.addEventListener('wheel', (event) => {
 
 svg.addEventListener('mousedown', (event) => {
     isDragging = true;
-    start.x = event.clientX;
-    start.y = event.clientY;
+    const point = svgPointFromEvent(event);
+    start.x = point.x;
+    start.y = point.y;
 });
 
 svg.addEventListener('mousemove', (event) => {
     if (isDragging) {
         let newOffset = {};
-        newOffset.x = withinPixelPrecision(offset.x.sub(F.fromNumber(event.clientX - start.x).div(scale)));
-        newOffset.y = withinPixelPrecision(offset.y.add(F.fromNumber(event.clientY - start.y).div(scale)));
-        start.x = event.clientX;
-        start.y = event.clientY;
+        const point = svgPointFromEvent(event);
+        newOffset.x = withinPixelPrecision(offset.x.sub(F.fromNumber(point.x - start.x).div(scale)));
+        newOffset.y = withinPixelPrecision(offset.y.add(F.fromNumber(point.y - start.y).div(scale)));
+        start.x = point.x;
+        start.y = point.y;
         updateCircles(offset, newOffset, scale, scale);
         offset = newOffset;
         for (let rational = firstCircle.next; rational !== lastCircle; rational = rational.next) {
