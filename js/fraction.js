@@ -311,12 +311,12 @@ export function fractionsInInterval(l, r, maxq) {
     let m = left.unsafeMediant(right);
     while (m.q <= maxq) {
         const c = l.compare(m);
-        if (c === 0n)
-            break;
-        if (c < 0) {
+        if (c <= 0) {
             m.next = first;
             first = m;
             right = m;
+            if (c === 0n)
+                break;
         } else
             left = m;
         m = left.unsafeMediant(right);
